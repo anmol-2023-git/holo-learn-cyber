@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, useAnimation } from "framer-motion";
 import { Shield, Code, Bug, Lock, Network, Terminal } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { TiltCard } from "@/components/TiltCard";
 
 const paths = [
   {
@@ -119,19 +120,46 @@ export const LearningPaths = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                whileHover={{ y: -8 }}
                 onHoverStart={() => setHoveredIndex(index)}
                 onHoverEnd={() => setHoveredIndex(null)}
               >
-                <Card className="relative overflow-hidden bg-card border-primary/30 hover:border-primary/60 transition-all duration-300 group h-full">
-                  {/* Animated background gradient */}
-                  <motion.div
-                    className={`absolute inset-0 bg-gradient-to-br ${path.color} opacity-0 group-hover:opacity-10 transition-opacity duration-300`}
-                    initial={false}
-                    animate={{
-                      scale: hoveredIndex === index ? 1 : 0.8,
-                    }}
-                  />
+                <TiltCard className="h-full">
+                  <Card className="relative overflow-hidden bg-card border-primary/30 hover:border-primary/60 transition-all duration-300 group h-full">
+                    {/* Animated background gradient */}
+                    <motion.div
+                      className={`absolute inset-0 bg-gradient-to-br ${path.color} opacity-0 group-hover:opacity-10 transition-opacity duration-300`}
+                      initial={false}
+                      animate={{
+                        scale: hoveredIndex === index ? 1 : 0.8,
+                      }}
+                    />
+
+                    {/* Particle effect on hover */}
+                    {hoveredIndex === index && (
+                      <>
+                        {[...Array(5)].map((_, i) => (
+                          <motion.div
+                            key={i}
+                            className="absolute w-2 h-2 bg-primary rounded-full"
+                            initial={{
+                              x: "50%",
+                              y: "50%",
+                              opacity: 1,
+                            }}
+                            animate={{
+                              x: `${50 + (Math.random() - 0.5) * 100}%`,
+                              y: `${50 + (Math.random() - 0.5) * 100}%`,
+                              opacity: 0,
+                            }}
+                            transition={{
+                              duration: 1,
+                              repeat: Infinity,
+                              delay: i * 0.2,
+                            }}
+                          />
+                        ))}
+                      </>
+                    )}
 
                   {/* Scan line effect */}
                   {hoveredIndex === index && (
@@ -146,11 +174,17 @@ export const LearningPaths = () => {
                   <div className="relative z-10 p-6">
                     {/* Icon */}
                     <motion.div
-                      className={`w-16 h-16 rounded-lg bg-gradient-to-br ${path.color} flex items-center justify-center mb-4 group-hover:animate-pulse-glow`}
-                      whileHover={{ rotate: 360 }}
+                      className={`w-16 h-16 rounded-lg bg-gradient-to-br ${path.color} flex items-center justify-center mb-4 group-hover:animate-pulse-glow relative`}
+                      whileHover={{ rotate: 360, scale: 1.1 }}
                       transition={{ duration: 0.6 }}
                     >
-                      <path.icon className="h-8 w-8 text-white" />
+                      <path.icon className="h-8 w-8 text-white relative z-10" />
+                      <motion.div
+                        className="absolute inset-0 rounded-lg bg-white/20"
+                        initial={{ scale: 1, opacity: 0 }}
+                        whileHover={{ scale: 1.5, opacity: 0 }}
+                        transition={{ duration: 0.6 }}
+                      />
                     </motion.div>
 
                     {/* Badge */}
@@ -191,8 +225,9 @@ export const LearningPaths = () => {
                     >
                       <div className={`absolute top-0 right-0 w-full h-full bg-gradient-to-bl ${path.color} opacity-20 blur-xl`} />
                     </motion.div>
-                  </div>
-                </Card>
+                    </div>
+                  </Card>
+                </TiltCard>
               </motion.div>
             ))}
           </div>

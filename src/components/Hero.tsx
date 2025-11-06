@@ -1,11 +1,14 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight, Terminal, Shield } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { MagneticButton } from "@/components/MagneticButton";
+import { TextReveal } from "@/components/TextReveal";
 import heroBg from "@/assets/hero-bg.jpg";
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 
 export const Hero = () => {
   const ref = useRef<HTMLDivElement>(null);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start start", "end start"],
@@ -14,8 +17,26 @@ export const Hero = () => {
   const y = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
   const opacity = useTransform(scrollYProgress, [0, 1], [1, 0]);
 
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePosition({ x: e.clientX, y: e.clientY });
+    };
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, []);
+
   return (
     <div ref={ref} className="relative min-h-screen overflow-hidden cyber-grid">
+      {/* Mouse spotlight effect */}
+      <motion.div
+        className="absolute w-96 h-96 rounded-full pointer-events-none z-[5]"
+        style={{
+          background: "radial-gradient(circle, rgba(0, 255, 255, 0.15) 0%, transparent 70%)",
+          left: mousePosition.x - 192,
+          top: mousePosition.y - 192,
+        }}
+      />
+
       {/* Background with Parallax */}
       <motion.div
         style={{ y, opacity }}
@@ -82,15 +103,11 @@ export const Hero = () => {
           </motion.h1>
 
           {/* Description */}
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}
+          <TextReveal
+            text="Master penetration testing, ethical hacking, and security operations with hands-on labs, real-world challenges, and gamified learning paths."
             className="text-xl text-muted-foreground mb-10 max-w-2xl mx-auto"
-          >
-            Master penetration testing, ethical hacking, and security operations
-            with hands-on labs, real-world challenges, and gamified learning paths.
-          </motion.p>
+            delay={0.6}
+          />
 
           {/* CTA Buttons */}
           <motion.div
@@ -99,7 +116,7 @@ export const Hero = () => {
             transition={{ delay: 0.8 }}
             className="flex flex-col sm:flex-row gap-4 justify-center items-center"
           >
-            <Button
+            <MagneticButton
               size="lg"
               className="ripple group bg-primary text-primary-foreground hover:bg-primary/90 px-8 py-6 text-lg font-bold glow-border relative overflow-hidden"
             >
@@ -112,15 +129,15 @@ export const Hero = () => {
                 animate={{ x: "100%" }}
                 transition={{ duration: 2, repeat: Infinity, repeatDelay: 1 }}
               />
-            </Button>
+            </MagneticButton>
 
-            <Button
+            <MagneticButton
               size="lg"
               variant="outline"
               className="ripple border-primary/50 hover:bg-primary/10 px-8 py-6 text-lg font-bold"
             >
               View Paths
-            </Button>
+            </MagneticButton>
           </motion.div>
 
           {/* Stats */}

@@ -1,11 +1,18 @@
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, useScroll, useSpring } from "framer-motion";
 import { Shield, Code, Target, Zap } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { MagneticButton } from "@/components/MagneticButton";
+import { GlitchText } from "@/components/GlitchText";
 import cyberLogo from "@/assets/cyber-logo.png";
 
 export const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001,
+  });
 
   useEffect(() => {
     const handleScroll = () => {
@@ -16,14 +23,21 @@ export const Navbar = () => {
   }, []);
 
   return (
-    <motion.nav
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled ? "bg-background/95 backdrop-blur-lg shadow-lg shadow-primary/10" : "bg-transparent"
-      }`}
-    >
-      <div className="container mx-auto px-6 py-4">
+    <>
+      {/* Scroll progress bar */}
+      <motion.div
+        className="fixed top-0 left-0 right-0 h-1 bg-primary z-[60] origin-left"
+        style={{ scaleX }}
+      />
+
+      <motion.nav
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+          scrolled ? "bg-background/95 backdrop-blur-lg shadow-lg shadow-primary/10" : "bg-transparent"
+        }`}
+      >
+        <div className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
           <motion.div
@@ -38,9 +52,10 @@ export const Navbar = () => {
               animate={{ rotate: [0, 360] }}
               transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
             />
-            <span className="text-2xl font-bold neon-text tracking-wider">
-              CYBERLEARN
-            </span>
+            <GlitchText 
+              text="CYBERLEARN"
+              className="text-2xl font-bold neon-text tracking-wider"
+            />
           </motion.div>
 
           {/* Navigation Links */}
@@ -77,7 +92,7 @@ export const Navbar = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.3 }}
           >
-            <Button
+            <MagneticButton
               className="ripple relative bg-primary text-primary-foreground hover:bg-primary/90 font-semibold px-6 glow-border group overflow-hidden"
               size="lg"
             >
@@ -89,10 +104,11 @@ export const Navbar = () => {
                 whileHover={{ x: "100%" }}
                 transition={{ duration: 0.5 }}
               />
-            </Button>
+            </MagneticButton>
           </motion.div>
         </div>
       </div>
     </motion.nav>
+    </>
   );
 };
